@@ -1,5 +1,5 @@
-function UserProfile(){
-    return <p>User Profile</p>
-}
+const UserProfile = () => {
+    return <p>User Profile</p>;
+};
 
-export default UserProfile
+export default UserProfile;
