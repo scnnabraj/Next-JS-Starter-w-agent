@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/core/*" :["./src/modules/core/*"]
+      "@/core/*": ["./src/modules/core/*"],
+      "@/auth/*": ["./src/modules/auth/*"]
     }
   },
   "include": [
