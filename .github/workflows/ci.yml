@@ -80,7 +80,7 @@ jobs:
 
           while IFS= read -r file; do
             # Check if file contains function declaration (not arrow function)
-            if grep -qE "^(export default )?function [A-Z]" "$file"; then
+            if grep -qE "^[[:space:]]*(export default )?function [A-Z]" "$file"; then
               VIOLATIONS+=("$file — use arrow function: const Name = () => { ... }")
             fi
           done < <(find src/modules -type f -name "index.tsx" | grep "/components/")
