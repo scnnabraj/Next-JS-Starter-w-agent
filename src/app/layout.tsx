@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import RTKQueryProvider from "@/modules/core/providers/RTKQueryProvider";
+import RTKQueryProvider from "@/core/providers/RTKQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
