@@ -1,0 +1,115 @@
+name: CI — Code quality and structure check
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-build:
+    name: Lint + Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Biome lint
+        run: pnpm lint
+
+      - name: Run build
+        run: pnpm build
+
+  structure-check:
+    name: AGENTS.md structure compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check component folder structure
+        run: |
+          echo "Checking component structure violations..."
+          VIOLATIONS=()
+
+          # Find .tsx files directly inside components/ (not in a subfolder)
+          while IFS= read -r file; do
+            VIOLATIONS+=("$file — must be inside its own folder: ComponentName/index.tsx")
+          done < <(find src/modules -type f -name "*.tsx" \
+            | grep "/components/" \
+            | grep -v "/components/[^/]*/index\.tsx" \
+            | grep -v "/pages/")
+
+          if [ ${#VIOLATIONS[@]} -gt 0 ]; then
+            echo ""
+            echo "AGENTS.md violation — Component structure errors:"
+            for v in "${VIOLATIONS[@]}"; do
+              echo "  ✗ $v"
+            done
+            echo ""
+            echo "Fix: Move each component into its own folder with index.tsx"
+            echo "  e.g. components/UserProfile.tsx → components/UserProfile/index.tsx"
+            exit 1
+          fi
+
+          echo "✓ All components follow folder/index.tsx structure"
+
+      - name: Check arrow function usage in components
+        run: |
+          echo "Checking for non-arrow function components..."
+          VIOLATIONS=()
+
+          while IFS= read -r file; do
+            # Check if file contains function declaration (not arrow function)
+            if grep -qE "^(export default )?function [A-Z]" "$file"; then
+              VIOLATIONS+=("$file — use arrow function: const Name = () => { ... }")
+            fi
+          done < <(find src/modules -type f -name "index.tsx" | grep "/components/")
+
+          if [ ${#VIOLATIONS[@]} -gt 0 ]; then
+            echo ""
+            echo "AGENTS.md violation — Arrow function rule:"
+            for v in "${VIOLATIONS[@]}"; do
+              echo "  ✗ $v"
+            done
+            exit 1
+          fi
+
+          echo "✓ All components use arrow functions"
+
+      - name: Check no barrel index.ts in module roots
+        run: |
+          echo "Checking for barrel index.ts in module roots..."
+          VIOLATIONS=()
+
+          while IFS= read -r file; do
+            VIOLATIONS+=("$file — do not add root barrel index.ts in modules")
+          done < <(find src/modules -maxdepth 2 -name "index.ts" \
+            | grep -vE "src/modules/[^/]+/(types|utils|hooks|services|components|pages)/")
+
+          if [ ${#VIOLATIONS[@]} -gt 0 ]; then
+            echo ""
+            echo "AGENTS.md violation — No module root barrels:"
+            for v in "${VIOLATIONS[@]}"; do
+              echo "  ✗ $v"
+            done
+            exit 1
+          fi
+
+          echo "✓ No barrel index.ts violations found"
