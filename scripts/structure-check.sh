@@ -29,6 +29,13 @@ clear_violations() {
   VIOLATIONS=()
 }
 
+# shadcn/ui primitives — bypass folder + arrow-function rules
+UI_COMPONENTS_PATH='src/modules/core/components/ui/'
+
+is_ui_component_file() {
+  [[ "$1" == ${UI_COMPONENTS_PATH}* ]]
+}
+
 # --- file sources ---
 
 staged_files() {
@@ -59,6 +66,14 @@ module_component_index_files() {
   fi
 }
 
+module_all_component_files() {
+  if $STAGED; then
+    staged_files | grep -E '^src/modules/[^/]+/components/.+\.tsx$' || true
+  else
+    find src/modules -type f -name "*.tsx" | grep "/components/" | grep -v "/pages/" || true
+  fi
+}
+
 staged_ts_files() {
   staged_files | grep -E '\.(ts|tsx)$' || true
 }
@@ -72,6 +87,7 @@ check_component_structure() {
   if $STAGED; then
     while IFS= read -r file; do
       [ -z "$file" ] && continue
+      is_ui_component_file "$file" && continue
       # File directly under components/ (not in a subfolder)
       if echo "$file" | grep -qE '^src/modules/[^/]+/components/[^/]+\.tsx$'; then
         fail "$file — must be inside its own folder: ComponentName/index.tsx"
@@ -84,9 +100,11 @@ check_component_structure() {
     done < <(module_component_tsx_files)
   else
     while IFS= read -r file; do
+      is_ui_component_file "$file" && continue
       fail "$file — must be inside its own folder: ComponentName/index.tsx"
     done < <(find src/modules -type f -name "*.tsx" \
       | grep "/components/" \
+      | grep -v "/components/ui/" \
       | grep -v "/components/[^/]*/index\.tsx" \
       | grep -v "/pages/")
   fi
@@ -101,6 +119,7 @@ check_pascal_case_folders() {
 
   while IFS= read -r file; do
     [ -z "$file" ] && continue
+    is_ui_component_file "$file" && continue
     folder=""
     if echo "$file" | grep -q "/components/"; then
       folder=$(echo "$file" | sed -E 's|^src/modules/[^/]+/components/([^/]+)/.*|\1|')
@@ -124,6 +143,7 @@ check_arrow_functions() {
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     [ ! -f "$file" ] && continue
+    is_ui_component_file "$file" && continue
     if grep -qE '^[[:space:]]*(export[[:space:]]+(default[[:space:]]+)?)?function[[:space:]]+[A-Z]' "$file"; then
       fail "$file — use arrow function: const Name = () => { ... }"
     fi
@@ -223,7 +243,7 @@ check_no_api_calls_in_components() {
     if grep -qE 'from ["'"'"']axios["'"'"']|from ["'"'"']@/utils/axios|useQueryFetch|useMutationQuery|useQuery\(|useMutation\(|[^a-zA-Z]fetch\(' "$file"; then
       fail "$file — components must not call APIs; move fetch/axios/React Query usage to hooks/ or services/"
     fi
-  done < <(module_component_index_files)
+  done < <(module_all_component_files)
 
   report_violations "No API calls in components"
   echo "✓ Components do not call APIs directly"
