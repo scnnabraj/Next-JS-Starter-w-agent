@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { API_BASE_URL, AUTH_TOKEN_KEY } from "@/modules/constants";
+import { API_BASE_URL, AUTH_TOKEN_KEY } from "@/constants";
 
 const defaultHeaders: HeadersInit = {
   "Content-Type": "application/json",

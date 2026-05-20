@@ -1,6 +1,6 @@
 // lib/axios.js
 import axios from "axios";
-import { API_BASE_URL, AUTH_TOKEN_KEY } from "@/modules/constants";
+import { API_BASE_URL, AUTH_TOKEN_KEY } from "@/constants";
 
 const defaultHeaders = {
   "Content-Type": "application/json",
