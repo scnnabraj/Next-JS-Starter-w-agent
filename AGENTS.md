@@ -125,9 +125,9 @@ To bypass in an emergency (not recommended): `git commit --no-verify` or `git pu
 
 | Check | Rule |
 |-------|------|
-| Component structure | Each component in `components/ComponentName/index.tsx` |
-| PascalCase folders | Component and page folder names must be PascalCase |
-| Arrow functions | Module `components/` and `pages/` use arrow functions |
+| Component structure | Each component in `components/ComponentName/index.tsx` (except `core/components/ui/`) |
+| PascalCase folders | Component and page folder names must be PascalCase (except `core/components/ui/`) |
+| Arrow functions | Module `components/` and `pages/` use arrow functions (except `core/components/ui/`) |
 | No module barrels | No root `index.ts` in `src/modules/<module>/` |
 | Import aliases | Use `@/core/*`, `@/auth/*` — not `@/modules/*` or barrel `@/auth` |
 | tsconfig aliases | Every module under `src/modules/` has a matching path alias |
@@ -372,11 +372,29 @@ src/modules/auth/components/UserCard/index.tsx
 src/modules/core/components/Button/index.tsx
 ```
 
+### Exception: shadcn/ui primitives (`core/components/ui/`)
+
+`src/modules/core/components/ui/` is reserved for **shadcn/ui** primitives. This path bypasses the folder and arrow-function rules above:
+
+- Flat files are allowed — e.g. `ui/button.tsx`, not `ui/Button/index.tsx`
+- `function` declarations are allowed — shadcn CLI generates components this way
+- Lowercase filenames are allowed — e.g. `button.tsx`, `input.tsx`
+
+All other AGENTS.md rules still apply in `ui/` (no API calls in components, Tailwind, `next/image`, etc.).
+
+```text
+src/modules/core/components/ui/button.tsx   ✓ allowed
+src/modules/core/components/ui/input.tsx    ✓ allowed
+```
+
+Do **not** put feature or domain components in `ui/` — only shared shadcn primitives belong here.
+
 ### Declaration
 
 1. Use arrow functions for components.
 2. Do not use `function ComponentName()` for module components.
 3. **Exception:** App Router files in `src/app/` (`layout.tsx`, `page.tsx`, etc.) may use `export default function` per Next.js convention.
+4. **Exception:** shadcn/ui files in `src/modules/core/components/ui/` may use `function` declarations.
 
 ```tsx
 const UserCard = () => {
