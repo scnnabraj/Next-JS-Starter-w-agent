@@ -9,7 +9,10 @@
     "lint": "biome check",
     "format": "biome format --write",
     "format:fix": "biome check --write",
-    "prepare": "husky install"
+    "test": "bash scripts/structure-check.sh",
+    "test:staged": "bash scripts/structure-check.sh --staged",
+    "validate": "pnpm lint && pnpm test && pnpm build",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,cjs,mjs}": [
