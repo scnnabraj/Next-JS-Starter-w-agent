@@ -7,9 +7,22 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "format:fix": "biome check --write",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,cjs,mjs}": [
+      "biome check"
+    ],
+    "*.{json,md,html,css,scss}": [
+      "biome check"
+    ]
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.11",
+    "axios": "^1.16.1",
+    "js-cookie-helper": "^1.0.4",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -21,6 +34,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

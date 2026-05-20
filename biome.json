@@ -16,21 +16,88 @@
   },
   "linter": {
     "enabled": true,
-    "rules": {
-      "recommended": true,
-      "suspicious": {
-        "noUnknownAtRules": "off"
-      }
-    },
     "domains": {
       "next": "recommended",
       "react": "recommended"
-    }
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": "on"
+    },
+    "rules": {
+      "recommended": true,
+      "complexity": {
+        "noUselessFragments": {
+          "fix": "safe",
+          "level": "on"
+        },
+        "noUselessCatch": "error",
+        "noUselessTypeConstraint": "error",
+        "useOptionalChain": {
+          "fix": "safe",
+          "level": "error"
+        }
+      },
+      "suspicious": {
+        "noUnknownAtRules": "off",
+        "noDoubleEquals": "error",
+        "noConsole": {
+          "level": "warn",
+          "fix": "safe",
+          "options": {
+            "allow": ["assert", "error", "info", "warn"]
+          }
+        },
+        "noDuplicateCase": "error",
+        "noIrregularWhitespace": "error",
+        "noVar": "error",
+        "noDuplicateJsxProps": "error",
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": {
+          "level": "info",
+          "options": {}
+        },
+        "noEmptyBlock": "error",
+        "noDuplicateProperties": "warn"
+      },
+      "correctness": {
+        "noUnusedVariables": {
+          "fix": "safe",
+          "level": "error"
+        },
+        "noConstAssign": "error",
+        "noUndeclaredDependencies": "error",
+        "useHookAtTopLevel": "error",
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error"
+        },
+        "noUnknownUnit": "error",
+        "useExhaustiveDependencies": {
+          "fix": "safe",
+          "level": "warn"
+        }
+      },
+      "style": {
+        "useConst": "error",
+        "useFragmentSyntax": "error",
+        "useDefaultParameterLast": "error",
+        "useImportType": "off",
+        "useConsistentArrayType": {
+          "level": "error",
+          "fix": "safe",
+          "options": {
+            "syntax": "generic"
+          }
+        }
+      },
+      "a11y": {
+        "useAltText": "error",
+        "useSemanticElements": "warn",
+        "useKeyWithClickEvents": "warn",
+        "noStaticElementInteractions": "info"
+      },
+      "performance": {
+        "noImgElement": "error"
+      },
+      "security": {
+        "noBlankTarget": "error"
       }
     }
   }
