@@ -195,7 +195,7 @@ check_tsconfig_aliases_for_new_modules() {
   local modules
   if $STAGED; then
     modules=$(staged_files | grep -E '^src/modules/[^/]+/' \
-      | sed -E 's|^src/modules/([^/]+)/.*|\1|' | sort -u)
+      | sed -E 's|^src/modules/([^/]+)/.*|\1|' | sort -u || true)
   else
     modules=$(find src/modules -mindepth 1 -maxdepth 1 -type d \
       | sed 's|src/modules/||' | sort -u)
