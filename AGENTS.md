@@ -101,7 +101,38 @@ pnpm build      # Production build
 pnpm start      # Run production server
 pnpm lint       # Biome check
 pnpm format:fix # Auto-fix lint + format
+pnpm test       # AGENTS.md compliance checks (full repo)
+pnpm test:staged # AGENTS.md compliance checks (staged changes only)
+pnpm validate   # lint + test + build (same as pre-push hook)
 ```
+
+### Git hooks (Husky)
+
+Hooks run automatically via Husky. Run `pnpm prepare` once after clone to activate them.
+
+| Hook | When | What runs |
+|------|------|-------------|
+| **pre-commit** | `git commit` | `lint-staged` (Biome on staged files) + `pnpm test:staged` (AGENTS.md rules on staged changes) |
+| **pre-push** | `git push` | `pnpm validate` — full lint, full AGENTS.md checks, and production build |
+
+If a hook fails, the commit or push is blocked until the errors are fixed.
+
+To bypass in an emergency (not recommended): `git commit --no-verify` or `git push --no-verify`.
+
+### AGENTS.md compliance checks
+
+`pnpm test` (full repo) and `pnpm test:staged` (staged files only) validate:
+
+| Check | Rule |
+|-------|------|
+| Component structure | Each component in `components/ComponentName/index.tsx` |
+| PascalCase folders | Component and page folder names must be PascalCase |
+| Arrow functions | Module `components/` and `pages/` use arrow functions |
+| No module barrels | No root `index.ts` in `src/modules/<module>/` |
+| Import aliases | Use `@/core/*`, `@/auth/*` — not `@/modules/*` or barrel `@/auth` |
+| tsconfig aliases | Every module under `src/modules/` has a matching path alias |
+| No API in components | Components must not import axios, fetch, or React Query hooks |
+| Server/client fetch | `executeFetch` must not be used in `"use client"` files |
 
 ---
 
