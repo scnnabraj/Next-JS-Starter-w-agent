@@ -142,3 +142,33 @@ const UserCard = () => {
 
 export default UserCard;
 ```
+
+## 3) Data fetching and mutation policy (required)
+
+Use only the approved data utilities below.
+
+### Initial reads (Server-side)
+
+1. In App Router, initial/critical page data must be fetched on the server.
+2. Server-side fetching must use: `src/utils/execute-fetch.ts`
+3. `execute-fetch.ts` is the standard wrapper over native `fetch()` and should be preferred over direct `fetch()` calls in app code.
+4. Use caching controls intentionally (`cache`, `next: { revalidate, tags }`) via the wrapper options.
+
+### Client reads (Client-side)
+
+1. Client-side data fetching must use: `src/modules/core/hooks/useQueryFetch.ts`
+2. Components should not call axios/fetch directly for query reads.
+3. Query keys and caching behavior must follow React Query best practices and module boundaries.
+
+### Mutations (Client-side)
+
+1. All create/update/delete actions must use: `src/modules/core/hooks/useMutationQuery.ts`
+2. Mutation calls must go through module `services/` (components remain UI-focused).
+3. Invalidate/refetch relevant queries after mutation success.
+4. Always handle loading/success/error states.
+
+### Type flexibility standard
+
+1. `execute-fetch.ts`, `useQueryFetch.ts`, and `useMutationQuery.ts` are flexible/typed utilities and should be consumed with module-specific types where available.
+2. Keep these utilities generic and reusable; do not hardcode domain-specific response/request types in core utilities.
+3. Prefer explicit typing at usage sites (`types/` in each module) to preserve safety and flexibility.
