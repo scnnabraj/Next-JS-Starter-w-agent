@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   lint-and-build:
     name: Lint + Build
@@ -19,7 +22,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: latest
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -77,7 +80,7 @@ jobs:
 
           while IFS= read -r file; do
             # Check if file contains function declaration (not arrow function)
-            if grep -qE "^(export default )?function [A-Z]" "$file"; then
+            if grep -qE "^[[:space:]]*(export[[:space:]]+(default[[:space:]]+)?)?function[[:space:]]+[A-Z]" "$file"; then
               VIOLATIONS+=("$file — use arrow function: const Name = () => { ... }")
             fi
           done < <(find src/modules -type f -name "index.tsx" | grep "/components/")
