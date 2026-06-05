@@ -11,6 +11,8 @@
     "format:fix": "biome check --write",
     "test": "bash scripts/structure-check.sh",
     "test:staged": "bash scripts/structure-check.sh --staged",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "validate": "pnpm lint && pnpm test && pnpm build",
     "prepare": "husky"
   },
@@ -46,10 +48,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/browser-playwright": "^4.1.8",
     "babel-plugin-react-compiler": "1.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.5",
+    "playwright": "^1.60.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8",
+    "vitest-browser-react": "^2.2.0"
   }
 }
