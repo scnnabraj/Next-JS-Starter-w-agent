@@ -92,9 +92,10 @@ check_component_structure() {
       if echo "$file" | grep -qE '^src/modules/[^/]+/components/[^/]+\.tsx$'; then
         fail "$file — must be inside its own folder: ComponentName/index.tsx"
       fi
-      # File in subfolder but not index.tsx
+      # File in subfolder but not index.tsx (allow colocated *.test.tsx)
       if echo "$file" | grep -qE '^src/modules/[^/]+/components/[^/]+/[^/]+\.tsx$' \
-        && ! echo "$file" | grep -qE '/index\.tsx$'; then
+        && ! echo "$file" | grep -qE '/index\.tsx$' \
+        && ! echo "$file" | grep -qE '\.test\.tsx$'; then
         fail "$file — component entry file must be index.tsx"
       fi
     done < <(module_component_tsx_files)
@@ -106,6 +107,7 @@ check_component_structure() {
       | grep "/components/" \
       | grep -v "/components/ui/" \
       | grep -v "/components/[^/]*/index\.tsx" \
+      | grep -v "\.test\.tsx$" \
       | grep -v "/pages/")
   fi
 

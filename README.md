@@ -399,8 +399,52 @@ pnpm lint          # Biome check
 pnpm format:fix    # Auto-fix lint + format
 pnpm test          # AGENTS.md compliance (full repo)
 pnpm test:staged   # AGENTS.md compliance (staged files only)
+pnpm test:unit     # Vitest unit + browser component tests
+pnpm test:unit:watch # Vitest watch mode
 pnpm validate      # lint + test + build
 ```
+
+### Unit and component tests (Vitest)
+
+This project uses [Vitest](https://vitest.dev/) with two modes:
+
+| Script | What it runs |
+|--------|----------------|
+| `pnpm test` | AGENTS.md structure checks (not Vitest) |
+| `pnpm test:unit` | Vitest — `*.test.ts` in Node, `*.test.tsx` in browser (Playwright) |
+
+**First-time setup for component tests:**
+
+```bash
+pnpm exec playwright install chromium
+```
+
+**Run tests:**
+
+```bash
+pnpm test:unit              # run once
+pnpm test:unit:watch        # watch mode
+```
+
+**File conventions:**
+
+- `src/**/*.test.ts` — Node environment (utilities, pure functions)
+- `src/**/*.test.tsx` — Browser environment (React components via `vitest-browser-react`)
+
+**Example component test** (`TitleBlock.test.tsx`):
+
+```tsx
+import { expect, test } from "vitest";
+import { render } from "vitest-browser-react";
+import TitleBlock from "./index";
+
+test("renders title", async () => {
+  const { getByText } = await render(<TitleBlock title="Hello Title" />);
+  await expect.element(getByText("Hello Title")).toBeInTheDocument();
+});
+```
+
+Use `getByText` for headings/text — not `getByAltText` (that is only for images with `alt` attributes).
 
 ---
 
