@@ -1,4 +1,5 @@
-function LoginPage() {
-  return <p>Login Page</p>;
+import LoginPage from "@/auth/pages/LoginPage";
+
+export default function Page() {
+  return <LoginPage />;
 }
-export default LoginPage;
